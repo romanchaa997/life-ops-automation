@@ -1,0 +1,24 @@
+# MCP Servers Registry for AI Automation
+servers:
+  github_mcp:
+    name: "GitHub MCP"
+    endpoint: "http://localhost:3001"
+    auth_type: "oauth2"
+    capabilities: ["create_issue", "update_issue", "push_to_repo"]
+    health_check: true
+  
+  notion_mcp:
+    name: "Notion MCP"
+    endpoint: "http://localhost:3002"
+    auth_type: "token"
+    capabilities: ["query_database", "create_page", "create_task"]
+  
+  telegram_mcp:
+    name: "Telegram Bot MCP"
+    endpoint: "http://localhost:3003"
+    auth_type: "token"
+    capabilities: ["send_message", "send_notification"]
+
+validation:
+  on_startup: true
+  periodic_check_minutes: 60
