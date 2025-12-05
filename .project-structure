@@ -1,0 +1,66 @@
+# Life-ops-automation Project Structure
+# Parallel automation agents for legal, infrastructure, and DevOps
+
+life-ops-automation/
+├── config/
+│   ├── legal.yaml              # Legal status sync config (Dia, e-Court, Email)
+│   ├── entra.yaml              # Azure Entra snapshot config (Graph API)
+│   ├── mcp-registry.yaml       # MCP servers registry & validation
+│   └── watchdog.yaml           # Deadlines & drift guard config
+│
+├── src/
+│   ├── level1_sync/            # LEVEL 1: State sync agents
+│   │   ├── legal_status_sync.py
+│   │   ├── entra_snapshot.py
+│   │   └── mcp_registry_sync.py
+│   │
+│   ├── level2_watchdog/        # LEVEL 2: Monitoring & guardrails
+│   │   ├── deadlines_watchdog.py
+│   │   ├── entra_drift_guard.py
+│   │   └── alert_manager.py
+│   │
+│   ├── level3_agents/          # LEVEL 3: Active execution agents
+│   │   ├── codegen_mcp_worker.py
+│   │   ├── legal_action_bot.py
+│   │   └── entra_auto_fix.py
+│   │
+│   ├── shared/
+│   │   ├── clients/
+│   │   │   ├── notion_client.py
+│   │   │   ├── github_client.py
+│   │   │   ├── graph_client.py
+│   │   │   └── telegram_client.py
+│   │   │
+│   │   ├── models/
+│   │   │   ├── legal_case.py
+│   │   │   ├── entra_state.py
+│   │   │   └── mcp_server.py
+│   │   │
+│   │   └── utils.py
+│   │
+│   └── orchestrator.py         # Main event loop & job scheduler
+│
+├── desired_state/              # Infrastructure-as-code
+│   ├── entra_access_model.yaml # Target Entra roles/groups
+│   └── legal_cases.yaml        # Case tracking baseline
+│
+├── state/                      # Runtime snapshots
+│   ├── entra/                  # Entra snapshots by date
+│   ├── legal/                  # Legal case snapshots
+│   └── mcp/                    # MCP registry snapshots
+│
+├── docs/
+│   ├── entra_state.md          # Current infrastructure status
+│   ├── mcp_registry.md         # MCP servers documentation
+│   ├── legal_workflows.md      # Case handling procedures
+│   └── architecture.md         # System design
+│
+├── .github/workflows/
+│   ├── sync_daily.yml          # Daily sync jobs
+│   ├── watchdog.yml            # Continuous monitoring
+│   └── notify.yml              # Alert notifications
+│
+├── requirements.txt            # Python dependencies
+├── .env.example                # Config template
+├── docker-compose.yml          # Optional: containerized deploy
+└── README.md                   # Setup & usage guide
