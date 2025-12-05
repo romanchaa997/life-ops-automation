@@ -1,0 +1,76 @@
+# Legal Status Sync Configuration
+# Sources: Dia (gov.ua orders), e-Court (electronic court), Email (manual updates)
+
+sources:
+  diia:
+    enabled: true
+    name: "Dia (Ukrainian Digital Services)"
+    url: "https://diia.gov.ua"
+    api_url: "https://api.diia.gov.ua/v1"
+    refresh_interval_hours: 3
+    sync_order_types:
+      - "services"
+      - "documents"
+    # Requires OAuth2 token via user session
+
+  e_court:
+    enabled: true
+    name: "Electronic Court (Суд.рф equivalent)"
+    url: "https://court.gov.ua"
+    search_api: "https://rsr-api.court.gov.ua/v2/"
+    refresh_interval_hours: 4
+    case_search_params:
+      - field: "case_number"
+      - field: "parties"
+      - field: "date_range"
+    notification_types:
+      - "new_resolution"
+      - "hearing_scheduled"
+      - "deadline_approaching"
+
+  email:
+    enabled: true
+    name: "Manual Email Updates"
+    imap_server: "{{ env.EMAIL_IMAP_SERVER }}"
+    imap_port: 993
+    email_account: "{{ env.EMAIL_ACCOUNT }}"
+    # Token stored in secrets manager
+    refresh_interval_hours: 1
+    folders:
+      - "INBOX"
+      - "[Gmail]/All Mail"
+    filters:
+      - pattern: "court|суд"
+        type: "legal_notice"
+      - pattern: "deadline|terme"
+        type: "deadline_alert"
+
+notify:
+  template_mapping:
+    case_opened: "Нова справа: {case_id} | {date_created} | {court_name}"
+    resolution_received: "Видана ухвала: {case_id} | {resolution_type} | {deadline}" 
+    deadline_approaching: "Наближається дедлайн: {case_id} | {days_remaining} днів до {deadline}"
+    
+notion:
+  database_id: "{{ env.NOTION_LEGAL_DB_ID }}"
+  task_template:
+    title: "{case_id}: {event_type}"
+    fields:
+      case_id: "text"
+      court_name: "text"
+      parties: "text"
+      deadline: "date"
+      status: "select"
+      priority: "select"
+      source: "select"
+      raw_data: "code"
+
+# Desired state baseline
+desired_state_file: "desired_state/legal_cases.yaml"
+
+# Error handling
+error_handling:
+  max_retries: 3
+  retry_backoff_seconds: 60
+  fail_on_source_error: false  # Continue with other sources
+  log_level: "INFO"
