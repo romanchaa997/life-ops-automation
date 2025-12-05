@@ -1,0 +1,22 @@
+# Azure Entra ID Snapshot Config
+identity_platform:
+  tenant_id: "{{ env.AZURE_TENANT_ID }}"
+graph_api:
+  base_url: "https://graph.microsoft.com/v1.0"
+  auth_client_id: "{{ env.GRAPH_CLIENT_ID }}"
+data_sync:
+  refresh_interval_hours: 6
+  endpoints:
+    - resource: "groups"
+      filters: {mailEnabled: false, groupTypes: "Unified"}
+    - resource: "servicePrincipals"
+    - resource: "directoryRoles"
+    - resource: "conditionalAccessPolicies"
+snapshot_storage:
+  format: "json"
+  output_directory: "state/entra/"
+generate_reports:
+  enabled: true
+error_handling:
+  max_retries: 3
+  log_level: "INFO"
